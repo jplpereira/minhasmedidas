@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF6347</color>
+    <color name="colorPrimaryDark">#8B0000</color>
+    <color name="colorAccent">#FF6347</color>
+    <color name="msg_no_measurements">#808080</color>
+    <color name="hint_enter_measurement">#808080</color>
+</resources>

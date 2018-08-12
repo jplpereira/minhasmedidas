@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_margin"
+    android:paddingRight="@dimen/activity_margin"
+    android:paddingTop="@dimen/activity_margin">
+
+    <TextView android:id="@+id/dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_10"
+        android:fontFamily="sans-serif-medium"
+        android:lineSpacingExtra="8sp"
+        android:text="@string/lbl_new_measurements_title"
+        android:textColor="@color/colorAccent"
+        android:textSize="@dimen/lbl_new_measurement_title"
+        android:textStyle="normal" />
+
+    <EditText
+        android:id="@+id/glucose"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:hint="@string/hint_measurement_glucose"
+        android:inputType="number"
+        android:textColorHint="@color/hint_enter_measurement"
+        android:textSize="@dimen/input_new_measurement" />
+
+    <EditText
+        android:id="@+id/systolic"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:hint="@string/hint_measurement_systolic"
+        android:inputType="number"
+        android:textColorHint="@color/hint_enter_measurement"
+        android:textSize="@dimen/input_new_measurement" />
+
+    <EditText
+        android:id="@+id/diastolic"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:hint="@string/hint_measurement_diastolic"
+        android:inputType="number"
+        android:textColorHint="@color/hint_enter_measurement"
+        android:textSize="@dimen/input_new_measurement" />
+
+</LinearLayout>

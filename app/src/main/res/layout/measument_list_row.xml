@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingBottom="@dimen/dimen_10"
+    android:paddingLeft="@dimen/activity_margin"
+    android:paddingRight="@dimen/activity_margin"
+    android:paddingTop="@dimen/dimen_10"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/date_field"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/measurement_list_text" />
+
+    <TextView
+        android:id="@+id/time_field"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:textSize="@dimen/measurement_list_text" />
+
+    <TextView
+        android:id="@+id/glucose_name"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@id/glucose_field"
+        android:textSize="@dimen/measurement_list_text"
+        android:text="Glicose: " />
+
+    <TextView
+        android:id="@+id/glucose_field"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="@dimen/measurement_list_text" />
+
+    <TextView
+        android:id="@+id/pressure_name"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/pressure_field"
+        android:text="Pressão: "
+        android:textSize="@dimen/measurement_list_text" />
+
+    <TextView
+        android:id="@+id/pressure_field"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:textSize="@dimen/measurement_list_text" />
+
+</RelativeLayout>

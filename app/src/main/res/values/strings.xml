@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Minhas Medidas</string>
+    <string name="action_settings">Configurações</string>
+    <string name="activity_title_home">Medidas</string>
+    <string name="msg_no_measurements">Nenhuma medida cadastrada!</string>
+    <string name="lbl_new_measurements_title">Nova medida</string>
+    <string name="lbl_edit_measurements_title">Editar medida</string>
+    <string name="hint_measurement_glucose">Glicose</string>
+    <string name="hint_measurement_systolic">Sistólica (alta)</string>
+    <string name="hint_measurement_diastolic">Diastólica (baixa)</string>
+</resources>
