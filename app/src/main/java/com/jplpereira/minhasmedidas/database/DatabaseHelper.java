@@ -32,10 +32,26 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    public long insertMeasurement(int glucose, int systolic, int diastolic){
+    public long insertPresentMeasurement(int glucose, int systolic, int diastolic){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(Measurement.COLUMN_GLUCOSE, glucose);
+        values.put(Measurement.COLUMN_SYSTOLIC, systolic);
+        values.put(Measurement.COLUMN_DIASTOLIC, diastolic);
+
+        long id = db.insert(Measurement.TABLE_NAME, null, values);
+
+        db.close();
+
+        return id;
+    }
+
+    public long insertPastMeasurement(String timestamp, int glucose, int systolic, int diastolic){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Measurement.COLUMN_TIMESTAMP, timestamp);
         values.put(Measurement.COLUMN_GLUCOSE, glucose);
         values.put(Measurement.COLUMN_SYSTOLIC, systolic);
         values.put(Measurement.COLUMN_DIASTOLIC, diastolic);
@@ -125,6 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         values.put(Measurement.COLUMN_GLUCOSE, measurement.getGlucose());
         values.put(Measurement.COLUMN_SYSTOLIC, measurement.getSystolic());
         values.put(Measurement.COLUMN_DIASTOLIC, measurement.getDiastolic());
+        values.put(Measurement.COLUMN_TIMESTAMP, measurement.getTimestamp());
 
         return db.update(Measurement.TABLE_NAME, values, Measurement.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(measurement.getId())});
