@@ -3,9 +3,12 @@
     <string name="action_settings">Configurações</string>
     <string name="activity_title_home">Medidas</string>
     <string name="msg_no_measurements">Nenhuma medida cadastrada!</string>
-    <string name="lbl_new_measurements_title">Nova medida</string>
+    <string name="lbl_new_present_measurements_title">Nova medida agora</string>
+    <string name="lbl_new_past_measurements_title">Outra nova medida</string>
     <string name="lbl_edit_measurements_title">Editar medida</string>
     <string name="hint_measurement_glucose">Glicose</string>
     <string name="hint_measurement_systolic">Sistólica (alta)</string>
     <string name="hint_measurement_diastolic">Diastólica (baixa)</string>
+    <string name="hint_measurement_date">Data (DD/MM/AA)</string>
+    <string name="hint_measurement_time">Hora (HH:MM)</string>
 </resources>
