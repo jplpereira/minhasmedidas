@@ -24,11 +24,69 @@
     <include layout="@layout/content_main" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/newFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        app:pressedTranslationZ="12dp"
+        app:elevation="6dp"
         android:src="@drawable/ic_add_white_24dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/presentFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="90dp"
+        android:visibility="invisible"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        android:src="@drawable/ic_now_white_24dp" />
+
+    <TextView
+        android:id="@+id/presentTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:padding="10dp"
+        android:layout_marginBottom="96dp"
+        android:layout_toLeftOf="@id/presentFab"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/drawable"
+        android:text="Presente"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/measurement_list_text"
+        android:visibility="invisible"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/pastFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="160dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:visibility="invisible"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        android:src="@drawable/ic_past_white_24dp" />
+
+    <TextView
+        android:id="@+id/pastTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Passada"
+        android:textSize="@dimen/measurement_list_text"
+        android:textColor="@android:color/white"
+        android:layout_gravity="bottom|end"
+        android:padding="10dp"
+        android:layout_marginBottom="166dp"
+        android:layout_toLeftOf="@id/pastFab"
+        android:visibility="invisible"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/drawable" />
 
 </android.support.design.widget.CoordinatorLayout>

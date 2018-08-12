@@ -13,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +28,7 @@ import com.jplpereira.minhasmedidas.utils.RecyclerTouchListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private MeasurementAdapter mAdapter;
     private List<Measurement> measurementList = new ArrayList<>();
     private CoordinatorLayout coordinatorLayout;
@@ -34,6 +36,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView noMeasurementsView;
 
     private DatabaseHelper db;
+
+    private Boolean isFabOpen = false;
+    private FloatingActionButton newFab, presentFab, pastFab;
+    private Animation open, close, rotate_forward, rotate_backward;
+    private TextView presentTextView, pastTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +57,23 @@ public class MainActivity extends AppCompatActivity {
 
         measurementList.addAll(db.getAllMeasurements());
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showMeasurementDialog(false, null, -1);
-            }
-        });
+        newFab = findViewById(R.id.newFab);
+        presentFab = findViewById(R.id.presentFab);
+        pastFab = findViewById(R.id.pastFab);
+        presentTextView = findViewById(R.id.presentTextView);
+        pastTextView = findViewById(R.id.pastTextView);
+
+        open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.open);
+        close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.close);
+        rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.rotate_forward);
+        rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.rotate_backward);
+
+        newFab.setOnClickListener(this);
+        presentFab.setOnClickListener(this);
+        pastFab.setOnClickListener(this);
+
 
         mAdapter = new MeasurementAdapter(this, measurementList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(
@@ -87,14 +104,49 @@ public class MainActivity extends AppCompatActivity {
         }));
     }
 
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.newFab:
+                animateFAB();
+                break;
+            case R.id.presentFab:
+                showPresentMeasurementDialog();
+                break;
+            case R.id.pastFab:
+                showPastMeasurementDialog(false, null, -1);
+                break;
+        }
+    }
+
     /**
      * Inserting new note in db
      * and refreshing the list
      */
-    private void createMeasurement(int glucose, int systolic, int diastolic) {
+    private void createPresentMeasurement(int glucose, int systolic, int diastolic) {
         // inserting note in db and getting
         // newly inserted note id
-        long id = db.insertMeasurement(glucose, systolic, diastolic);
+        long id = db.insertPresentMeasurement(glucose, systolic, diastolic);
+
+        // get the newly inserted note from db
+        Measurement m = db.getMeasurement(id);
+
+        if (m != null) {
+            // adding new note to array list at 0 position
+            measurementList.add(0, m);
+
+            // refreshing the list
+            mAdapter.notifyDataSetChanged();
+
+            toggleEmptyMeasurements();
+        }
+    }
+
+    private void createPastMeasurement(String timestamp, int glucose, int systolic, int diastolic) {
+        // inserting note in db and getting
+        // newly inserted note id
+        long id = db.insertPastMeasurement(timestamp, glucose, systolic, diastolic);
 
         // get the newly inserted note from db
         Measurement m = db.getMeasurement(id);
@@ -114,12 +166,14 @@ public class MainActivity extends AppCompatActivity {
      * Updating note in db and updating
      * item in the list by its position
      */
-    private void updateMeasurement(int glucose, int systolic, int diastolic, int position) {
+    private void updateMeasurement(String timestamp, int glucose, int systolic, int diastolic,
+                                   int position) {
         Measurement measurement = measurementList.get(position);
         // updating note text
         measurement.setGlucose(glucose);
         measurement.setSystolic(systolic);
         measurement.setDiastolic(diastolic);
+        measurement.setTimestamp(timestamp);
 
         // updating note in db
         db.updateMeasurement(measurement);
@@ -130,6 +184,8 @@ public class MainActivity extends AppCompatActivity {
 
         toggleEmptyMeasurements();
     }
+
+
 
     /**
      * Deleting note from SQLite and removing the
@@ -160,7 +216,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
-                    showMeasurementDialog(true, measurementList.get(position), position);
+                    showPastMeasurementDialog(true,
+                            measurementList.get(position), position);
                 } else {
                     deleteMeasurement(position);
                 }
@@ -175,31 +232,24 @@ public class MainActivity extends AppCompatActivity {
      * when shouldUpdate=true, it automatically displays old note and changes the
      * button text to UPDATE
      */
-    private void showMeasurementDialog(final boolean shouldUpdate, final Measurement measurement,
-                                       final int position) {
+    private void showPresentMeasurementDialog() {
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
-        View view = layoutInflaterAndroid.inflate(R.layout.measurement_dialog, null);
-
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(
                 MainActivity.this);
+
+        View view = layoutInflaterAndroid.inflate(R.layout.present_measurement_dialog, null);
         alertDialogBuilderUserInput.setView(view);
 
         final EditText inputGlucose = view.findViewById(R.id.glucose);
         final EditText inputSystolic = view.findViewById(R.id.systolic);
         final EditText inputDiastolic = view.findViewById(R.id.diastolic);
-        TextView dialogTitle = view.findViewById(R.id.dialog_title);
-        dialogTitle.setText(!shouldUpdate ? getString(R.string.lbl_new_measurements_title) :
-                getString(R.string.lbl_edit_measurements_title));
 
-        if (shouldUpdate && measurement != null) {
-            inputGlucose.setText(String.valueOf(measurement.getGlucose()));
-            inputSystolic.setText(String.valueOf(measurement.getSystolic()));
-            inputDiastolic.setText(String.valueOf(measurement.getDiastolic()));
-        }
+        TextView dialogTitle = view.findViewById(R.id.dialog_title);
+        dialogTitle.setText(getString(R.string.lbl_new_present_measurements_title));
+
         alertDialogBuilderUserInput
                 .setCancelable(false)
-                .setPositiveButton(shouldUpdate ? "atualizar" : "salvar",
-                        new DialogInterface.OnClickListener() {
+                .setPositiveButton("salvar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
 
                     }
@@ -229,21 +279,101 @@ public class MainActivity extends AppCompatActivity {
                     alertDialog.dismiss();
                 }
 
-                // check if user updating note
-                if (shouldUpdate && measurement != null) {
-                    // update note by it's id
-                    updateMeasurement(Integer.parseInt(inputGlucose.getText().toString()),
-                            Integer.parseInt(inputSystolic.getText().toString()),
-                            Integer.parseInt(inputDiastolic.getText().toString()),
-                            position);
-                } else {
-                    // create new note
-                    createMeasurement(Integer.parseInt(inputGlucose.getText().toString()),
-                            Integer.parseInt(inputSystolic.getText().toString()),
-                            Integer.parseInt(inputDiastolic.getText().toString()));
-                }
+                createPresentMeasurement(Integer.parseInt(inputGlucose.getText().toString()),
+                        Integer.parseInt(inputSystolic.getText().toString()),
+                        Integer.parseInt(inputDiastolic.getText().toString()));
             }
         });
+    }
+
+    private void showPastMeasurementDialog(final boolean shouldUpdate, final Measurement measurement,
+                                       final int position) {
+        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
+        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(
+                MainActivity.this);
+
+        View view = layoutInflaterAndroid.inflate(R.layout.past_measurement_dialog, null);
+        alertDialogBuilderUserInput.setView(view);
+
+        final EditText inputGlucose = view.findViewById(R.id.glucose);
+        final EditText inputSystolic = view.findViewById(R.id.systolic);
+        final EditText inputDiastolic = view.findViewById(R.id.diastolic);
+        final EditText inputDate = view.findViewById(R.id.date);
+        final EditText inputTime = view.findViewById(R.id.time);
+
+        TextView dialogTitle = view.findViewById(R.id.dialog_title);
+        dialogTitle.setText(!shouldUpdate ? getString(R.string.lbl_new_present_measurements_title) :
+                getString(R.string.lbl_edit_measurements_title));
+
+        if (shouldUpdate && measurement != null) {
+            inputGlucose.setText(String.valueOf(measurement.getGlucose()));
+            inputSystolic.setText(String.valueOf(measurement.getSystolic()));
+            inputDiastolic.setText(String.valueOf(measurement.getDiastolic()));
+            inputDate.setText(mAdapter.showDate(measurement.getTimestamp()));
+            inputTime.setText(mAdapter.showTime(measurement.getTimestamp()));
+        }
+        alertDialogBuilderUserInput
+                .setCancelable(false)
+                .setPositiveButton(shouldUpdate ? "atualizar" : "salvar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+
+                            }
+                        })
+                .setNegativeButton("cancelar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                dialogBox.cancel();
+                            }
+                        });
+
+        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
+        alertDialog.show();
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Show toast message when no text is entered
+                        if (TextUtils.isEmpty(inputGlucose.getText().toString())
+                                || TextUtils.isEmpty(inputSystolic.getText().toString())
+                                || TextUtils.isEmpty(inputDiastolic.getText().toString())
+                                || TextUtils.isEmpty(inputDate.getText().toString())
+                                || TextUtils.isEmpty(inputTime.getText().toString()) ) {
+                            Toast.makeText(MainActivity.this, "Preencha todos os campos!",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        } else if (!mAdapter.checkDatePattern(inputDate.getText().toString())) {
+                            Toast.makeText(MainActivity.this,
+                                    "Formato de data incorreto!", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else if (!mAdapter.checkTimePattern(inputTime.getText().toString())) {
+                            Toast.makeText(MainActivity.this,
+                                    "Formato de hora incorreto!", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else {
+                            alertDialog.dismiss();
+                        }
+
+                        // check if user updating note
+                        if (shouldUpdate && measurement != null) {
+                            // update note by it's id
+                            updateMeasurement(mAdapter.joinDateTime(inputDate.getText()
+                                            .toString(), inputTime.getText().toString()),
+                                    Integer.parseInt(inputGlucose.getText().toString()),
+                                    Integer.parseInt(inputSystolic.getText().toString()),
+                                    Integer.parseInt(inputDiastolic.getText().toString()),
+                                    position);
+                        } else {
+                            // create new note
+                            createPastMeasurement(mAdapter.joinDateTime(inputDate.getText()
+                                            .toString(), inputTime.getText().toString()),
+                                    Integer.parseInt(inputGlucose.getText().toString()),
+                                    Integer.parseInt(inputSystolic.getText().toString()),
+                                    Integer.parseInt(inputDiastolic.getText().toString()));
+                        }
+                    }
+                });
     }
 
     /**
@@ -256,6 +386,29 @@ public class MainActivity extends AppCompatActivity {
             noMeasurementsView.setVisibility(View.GONE);
         } else {
             noMeasurementsView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void animateFAB(){
+
+        if(isFabOpen){
+            newFab.startAnimation(rotate_backward);
+            presentFab.startAnimation(close);
+            presentTextView.startAnimation(close);
+            pastFab.startAnimation(close);
+            pastTextView.startAnimation(close);
+            presentFab.setClickable(false);
+            pastFab.setClickable(false);
+            isFabOpen = false;
+        } else {
+            newFab.startAnimation(rotate_forward);
+            presentFab.startAnimation(open);
+            presentTextView.startAnimation(open);
+            pastFab.startAnimation(open);
+            pastTextView.startAnimation(open);
+            presentFab.setClickable(true);
+            pastFab.setClickable(true);
+            isFabOpen = true;
         }
     }
 }

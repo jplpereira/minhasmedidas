@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MeasurementAdapter extends RecyclerView.Adapter<MeasurementAdapter.MyViewHolder> {
 
@@ -59,8 +60,8 @@ public class MeasurementAdapter extends RecyclerView.Adapter<MeasurementAdapter.
                 measurement.getDiastolic()));
 
         // Formatting and displaying timestamp
-        holder.date.setText(formatDate(measurement.getTimestamp()));
-        holder.time.setText(formatTime(measurement.getTimestamp()));
+        holder.date.setText(showDate(measurement.getTimestamp()));
+        holder.time.setText(showTime(measurement.getTimestamp()));
     }
 
     @Override
@@ -68,12 +69,7 @@ public class MeasurementAdapter extends RecyclerView.Adapter<MeasurementAdapter.
         return measurementList.size();
     }
 
-    /**
-     * Formatting timestamp to `MMM d` format
-     * Input: 2018-02-21 00:15:42
-     * Output: Feb 21
-     */
-    private String formatDate(String dateStr) {
+    public String showDate(String dateStr) {
         try {
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = fmt.parse(dateStr);
@@ -85,13 +81,43 @@ public class MeasurementAdapter extends RecyclerView.Adapter<MeasurementAdapter.
         return "";
     }
 
-    private String formatTime(String dateStr){
+    public String showTime(String dateStr){
         try{
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             fmt.setTimeZone(TimeZone.getTimeZone("-03"));
             Date date = fmt.parse(dateStr);
             SimpleDateFormat fmtOut = new SimpleDateFormat("HH:mm");
             return fmtOut.format(date);
+        } catch (ParseException e) {
+
+        }
+        return "";
+    }
+
+    public boolean checkDatePattern (String dateStr){
+        Pattern pattern = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}$");
+        Matcher matcher = pattern.matcher(dateStr);
+        boolean matches = matcher.matches();
+
+        return matches;
+    }
+
+    public boolean checkTimePattern (String timeStr){
+        Pattern pattern = Pattern.compile("^\\d{2}:\\d{2}$");
+        Matcher matcher = pattern.matcher(timeStr);
+        boolean matches = matcher.matches();
+
+        return matches;
+    }
+
+    public String joinDateTime(String date, String time){
+        String dateStr = String.format("%s %s", date, time);
+        try{
+            SimpleDateFormat fmt = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date parsedDate = fmt.parse(dateStr);
+            SimpleDateFormat fmtOut = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            fmtOut.setTimeZone(TimeZone.getTimeZone("-03"));
+            return fmtOut.format(parsedDate);
         } catch (ParseException e) {
 
         }
