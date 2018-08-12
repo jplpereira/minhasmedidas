@@ -102,6 +102,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showActionsDialog(position);
             }
         }));
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && newFab.isShown()){
+                    newFab.hide();
+                } else {
+                    // nothing to do
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE &&
+                        recyclerView.canScrollVertically(1)) {
+                    newFab.show();
+                } else {
+                    // nothing to do
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
     }
 
     @Override
