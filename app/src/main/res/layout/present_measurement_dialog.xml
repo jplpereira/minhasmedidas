@@ -13,7 +13,7 @@
         android:layout_marginBottom="@dimen/dimen_10"
         android:fontFamily="sans-serif-medium"
         android:lineSpacingExtra="8sp"
-        android:text="@string/lbl_new_measurements_title"
+        android:text="@string/lbl_new_present_measurements_title"
         android:textColor="@color/colorAccent"
         android:textSize="@dimen/lbl_new_measurement_title"
         android:textStyle="normal" />
